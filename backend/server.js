@@ -1,6 +1,7 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const path = require("path"); // ✅ needed to serve frontend
 require("dotenv").config();
 
 const app = express();
@@ -15,6 +16,14 @@ const { getSales, addSale } = require("./controllers/salesController");
 // Routes
 app.get("/api/sales", getSales);
 app.post("/api/sales", addSale); // For adding new sale
+
+// Serve React frontend
+const frontendBuildPath = path.join(__dirname, "../frontend/build");
+app.use(express.static(frontendBuildPath));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(frontendBuildPath, "index.html"));
+});
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {
